@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Pagina Prueba Fisica</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/nerdamer.core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Calculus.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Algebra.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/nerdamer@1.1.13/Solve.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        :root {
+            --primary: #1976d2;
+            --primary-light: #e3f2fd;
+            --accent: #ff7043;
+            --bg: #f7f9fb;
+            --card-bg: #fff;
+            --card-shadow: 0 4px 24px rgba(25, 118, 210, 0.08);
+            --border: #e0e4ea;
+            --muted: #7b8ca7;
+            --radius: 18px;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            background: var(--bg);
+            color: #222;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background: url('https://i.ibb.co/bMcwvD4n/47685703-9182241.jpg') center/cover no-repeat;
+            opacity: 0.18;
+        }
+        header {
+            background: var(--card-bg);
+            border-bottom: 1.5px solid var(--border);
+            padding: 32px 24px 12px 24px;
+            box-shadow: var(--card-shadow);
+            border-radius: 0 0 var(--radius) var(--radius);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--primary);
+            letter-spacing: 0.01em;
+            text-shadow: 0 2px 8px #1976d222;
+        }
+        .tabs {
+            display: flex;
+            gap: 18px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 13px 28px;
+            border-radius: var(--radius) var(--radius) 0 0;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1.08rem;
+            border: 2px solid var(--border);
+            border-bottom: none;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px #1976d211;
+        }
+        .tab.active {
+            background: var(--card-bg);
+            color: var(--accent);
+            border-bottom: 3px solid var(--accent);
+            font-weight: 700;
+            box-shadow: 0 4px 16px #1976d222;
+        }
+        .tab:hover:not(.active) {
+            background: #e3eaf3;
+            color: var(--primary);
+        }
+        main {
+            max-width: 1200px;
+            margin: 36px auto;
+            padding: 0 18px 64px;
+            position: relative;
+            z-index: 1;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            border: 1.5px solid var(--border);
+            padding: 32px 28px;
+            margin: 32px 0;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(2px);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+        .row {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        label {
+            font-size: 15px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: block;
+        }
+        input, select {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--primary-light);
+            color: #222;
+            font-size: 1rem;
+            font-family: inherit;
+            margin-bottom: 4px;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px #ff704344;
+        }
+        input[type="range"] {
+            accent-color: var(--accent);
+            background: transparent;
+            margin-bottom: 0;
+        }
+        input[type="checkbox"] {
+            width: auto;
+            accent-color: var(--accent);
+            margin-right: 6px;
+        }
+        button {
+            padding: 13px 18px;
+            border-radius: 12px;
+            border: 1.5px solid var(--border);
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            box-shadow: 0 2px 8px #1976d211;
+        }
+        button.primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: 0 4px 16px #ff704344;
+        }
+        button:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: translateY(-2px) scale(1.04);
+        }
+        .kpi {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 18px;
+            margin-top: 18px;
+        }
+        .kpi .item {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 14px;
+            border: 1.5px solid var(--border);
+            box-shadow: 0 2px 8px #1976d211;
+        }
+        .kpi .val {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent);
+            text-shadow: 0 2px 8px #ff704322;
+        }
+        .fall-visualization, .projectile-visualization {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(120deg, #e3f2fd 0%, #f1f5f9 60%, #dbeafe 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid var(--border);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 12px;
+        }
+        .fall-visualization {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 60%, #98FB98 100%);
+        }
+        .projectile-visualization {
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #228B22 100%);
+        }
+        .building {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            background: linear-gradient(to bottom, #1976d2, #64b5f6 80%);
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 0 20px #1976d222;
+        }
+        .building-windows {
+            position: absolute;
+            top: 20px;
+            left: 15px;
+            right: 15px;
+            bottom: 20px;
+        }
+        .window {
+            position: absolute;
+            width: 12px;
+            height: 15px;
+            background: #ffe066;
+            border-radius: 2px;
+            box-shadow: 0 2px 8px #1976d222;
+        }
+        .falling-object, .projectile {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle, #FF4444 60%, #1976d2 100%);
+            border-radius: 50%;
+            box-shadow: 0 2px 12px #1976d244;
+            z-index: 10;
+            border: 2px solid #fff;
+        }
+        /* Cañón avanzado */
+        .cannon-advanced {
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            width: 60px;
+            height: 32px;
+            z-index: 5;
+            pointer-events: none;
+        }
+        .cannon-barrel {
+            position: absolute;
+            bottom: 12px;
+            left: 18px;
+            width: 44px;
+            height: 12px;
+            background: linear-gradient(90deg, #1976d2 60%, #222 100%);
+            border-radius: 8px 18px 8px 8px;
+            box-shadow: 0 2px 8px #1976d222;
+            transform-origin: left bottom;
+        }
+        .cannon-base {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 18px;
+            background: linear-gradient(90deg, #222 80%, #1976d222 100%);
+            border-radius: 10px 10px 14px 14px;
+            box-shadow: 0 2px 8px #1976d222;
+        }
+        .cannon-shadow {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 8px;
+            background: radial-gradient(circle, #2223 60%, transparent 100%);
+            border-radius: 0 0 14px 14px;
+        }
+        .cannon-detail {
+            position: absolute;
+            bottom: 6px;
+            left: 8px;
+            width: 12px;
+            height: 12px;
+            background: #ffe066;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px #1976d222;
+        }
+        .trail {
+            position: absolute;
+            width: 3px;
+            background: linear-gradient(to bottom, transparent, #FF4444 80%);
+            border-radius: 2px;
+            z-index: 5;
+        }
+        .impact-effect {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1976d288 0%, transparent 80%);
+            opacity: 0;
+            animation: impact 0.5s ease-out;
+        }
+        @keyframes impact {
+            0% { opacity: 1; transform: translateX(-50%) scale(0.2); }
+            100% { opacity: 0; transform: translateX(-50%) scale(1); }
+        }
+        .real-time-data {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: #fff;
+            padding: 16px;
+            border-radius: 14px;
+            border: 2px solid var(--border);
+            font-size: 15px;
+            min-width: 170px;
+            box-shadow: 0 2px 12px #1976d222;
+            color: #222;
+        }
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        .status-ready { background: #34d399; }
+        .status-falling { background: #fbbf24; animation: pulse 1s infinite; }
+        .status-impact { background: #ff4444; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .fall-guide {
+            pointer-events: none;
+            z-index: 2;
+            background: #222;
+        }
+        .muted { color: var(--muted); }
+        .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+        .sidenote { font-size: 13px; color: var(--muted); }
+        canvas {
+            background: #fff !important;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px #1976d222;
+            border: 2px solid var(--border);
+            margin-bottom: 12px;
+        }
+        .chartjs-render-monitor {
+            background: #fff !important;
+        }
+        .hidden {
+            display: none !important;
+        }
+        @media (max-width: 900px) {
+            .grid { grid-template-columns: 1fr; }
+            .card { padding: 18px 8px; }
+            .fall-visualization, .projectile-visualization { height: 320px; }
+            .real-time-data { min-width: 120px; font-size: 13px; }
+        }
+        @media (max-width: 600px) {
+            header { padding: 18px 8px 8px 8px; }
+            h1 { font-size: 1.2rem; }
+            .tabs { gap: 8px; }
+            .tab { padding: 8px 12px; font-size: 0.9rem; }
+            main { padding: 0 4px 32px; }
+            .card { margin: 12px 0; }
+            .fall-visualization, .projectile-visualization { height: 220px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Laboratorio Interactivo</h1>
+        <div class="tabs" id="tabs">
+            <div class="tab active" data-target="tab-parabolico">Movimiento parabólico</div>
+            <div class="tab" data-target="tab-caida">Caída libre visual</div>
+            <div class="tab" data-target="tab-integral">Integrales</div>
+        </div>
+    </header>
+    <main>
+        <!-- Movimiento parabólico -->
+        <section id="tab-parabolico" class="card">
+            <h2>Movimiento parabólico</h2>
+            <p class="muted">
+                Simula la trayectoria de un proyectil desde un cañón o edificio.<br>
+                Si el ángulo de lanzamiento es cercano a 90° y la altura inicial es positiva, la visualización cambiará a modo edificio (caída vertical desde altura).
+            </p>
+            <div class="grid">
+                <div>
+                    <div class="row">
+                        <div style="flex:1">
+                            <label>Velocidad inicial \(V_0\) [m/s]</label>
+                            <input type="number" id="p_v0" value="20" step="0.1" min="0"/>
+                        </div>
+                        <div style="flex:1">
+                            <label>Ángulo \(\theta\) [°]</label>
+                            <input type="number" id="p_theta" value="45" step="0.1"/>
+                        </div>
+                        <div style="flex:1">
+                            <label>Altura inicial \(Y_0\) [m]</label>
+                            <input type="number" id="p_y0" value="0" step="0.1"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:1">
+                            <label>Gravedad \(G\) [m/s²]</label>
+                            <input type="number" id="p_g" value="9.81" step="0.01" min="0"/>
+                        </div>
+                        <div style="flex:1">
+                            <label>∆t simulación [s]</label>
+                            <input type="number" id="p_dt" value="0.02" step="0.01" min="0.005"/>
+                        </div>
+                        <div style="flex:1">
+                            <label><input type="checkbox" id="p_drag"/> Incluir arrastre lineal</label>
+                            <input type="number" id="p_k" value="0.05" step="0.01" min="0" title="Coeficiente k (kg/s)"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <button class="primary" id="p_run">Calcular y graficar</button>
+                        <button id="p_anim">Animar trayectoria</button>
+                        <button id="p_reset">Reiniciar</button>
+                        <button id="p_png">Descargar PNG</button>
+                        <button id="p_pdf">Informe PDF</button>
+                    </div>
+                    <div class="kpi" id="p_kpis">
+                        <div class="item"><div class="muted">Alcance</div><div class="val" id="p_range">—</div></div>
+                        <div class="item"><div class="muted">Tiempo de vuelo</div><div class="val" id="p_tflight">—</div></div>
+                        <div class="item"><div class="muted">Altura máxima</div><div class="val" id="p_hmax">—</div></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="projectile-visualization" id="projViz">
+                        <div class="cannon-advanced" id="cannon">
+                            <div class="cannon-barrel"></div>
+                            <div class="cannon-base"></div>
+                            <div class="cannon-shadow"></div>
+                            <div class="cannon-detail"></div>
+                        </div>
+                        <div class="projectile" id="projectile"></div>
+                        <div class="real-time-data" id="realTimeDataProj">
+                            <div><strong>Estado:</strong> <span id="statusProj">Listo</span></div>
+                            <div><strong>Tiempo:</strong> <span id="timeProj">0.00 s</span></div>
+                            <div><strong>Posición x:</strong> <span id="xDisplay">0.0 m</span></div>
+                            <div><strong>Posición y:</strong> <span id="yDisplay">0.0 m</span></div>
+                            <div><strong>Velocidad:</strong> <span id="vDisplay">0.0 m/s</span></div>
+                        </div>
+                    </div>
+                    <canvas id="p_chart" height="320"></canvas>
+                </div>
+            </div>
+        </section>
+        <!-- Caída libre -->
+        <section id="tab-caida" class="card hidden">
+            <h2>Caída libre desde un edificio</h2>
+            <p class="muted">Visualización interactiva de caída libre con opción para velocidad inicial hacia arriba.</p>
+            <div class="control-panel">
+                <div>
+                    <label>Altura del edificio \(Y_0\) [m]</label>
+                    <input type="range" id="c_y0" min="20" max="200" value="100" step="5"/>
+                    <span id="c_y0_val">100 m</span>
+                </div>
+                <div>
+                    <label>Velocidad inicial \(V_0\) </label>
+                    <div style="display:flex;gap:8px;">
+                        <input type="number" id="c_v0" min="-10" max="10" value="0" step="0.1" style="flex:1"/>
+                        <select id="c_v0_unit" style="width:80px;">
+                            <option value="ms">m/s</option>
+                            <option value="kmh">km/h</option>
+                        </select>
+                    </div>
+                    <span id="c_v0_val">0 m/s</span>
+                </div>
+                <div>
+                    <label>Gravedad \(G\) [m/s²]</label>
+                    <input type="number" id="c_g" min="1" max="20" value="9.8" step="0.01"/>
+                    <span id="c_g_val">9.8 m/s²</span>
+                </div>
+                <div>
+                    <label>Velocidad de animación</label>
+                    <input type="range" id="c_speed" min="0.1" max="3" value="1" step="0.1"/>
+                    <span id="c_speed_val">1x</span>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px;">
+                <button class="primary" id="c_start">
+                    <span class="status-indicator status-ready"></span>
+                    Iniciar caída
+                </button>
+                <button id="c_reset">Reiniciar</button>
+                <button id="c_pdf">Generar informe</button>
+                <button id="c_png">Descargar PNG</button>
+            </div>
+            <div class="grid">
+                <div>
+                    <div class="fall-visualization" id="fallViz">
+                        <div class="building" id="building">
+                            <div class="building-windows" id="windows"></div>
+                        </div>
+                        <div class="falling-object" id="fallingObject"></div>
+                        <div class="real-time-data" id="realTimeData">
+                            <div><strong>Estado:</strong> <span id="status">Listo</span></div>
+                            <div><strong>Altura del edificio:</strong> <span id="buildingHeightDisplay">100 m</span></div>
+                            <div><strong>Tiempo:</strong> <span id="timeDisplay">0.00 s</span></div>
+                            <div><strong>Altura:</strong> <span id="heightDisplay">0.0 m</span></div>
+                            <div><strong>Velocidad:</strong> <span id="velocityDisplay">0.0 m/s</span></div>
+                        </div>
+                    </div>
+                    <div class="kpi" style="margin-top: 15px;">
+                        <div class="item"><div class="muted">Tiempo de impacto</div><div class="val" id="c_ti">—</div></div>
+                        <div class="item"><div class="muted">Velocidad final</div><div class="val" id="c_vi">—</div></div>
+                        <div class="item"><div class="muted">Energía de impacto</div><div class="val" id="c_ke">—</div></div>
+                    </div>
+                </div>
+                <div>
+                    <canvas id="c_chart_live" height="180"></canvas>
+                    <div style="height:10px"></div>
+                    <canvas id="c_chart_velocity" height="180"></canvas>
+                </div>
+            </div>
+        </section>
+        <!-- Integrales -->
+        <section id="tab-integral" class="card hidden">
+            <h2>Integrales (indefinidas y definidas)</h2>
+            <p class="muted">Calcula y visualiza integrales de funciones. Usa notación estándar para f(x).</p>
+            <div class="grid">
+                <div>
+                    <div class="row">
+                        <div style="flex:1">
+                            <label>Función \(f(x)\)</label>
+                            <input id="i_fx" value="sin(x) + x^2"/>
+                        </div>
+                        <div style="flex:0.6">
+                            <label>Desde a</label>
+                            <input type="number" id="i_a" value="0" step="0.1"/>
+                        </div>
+                        <div style="flex:0.6">
+                            <label>Hasta b</label>
+                            <input type="number" id="i_b" value="3.1416" step="0.1"/>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div style="flex:0.6">
+                            <label>Muestras mín.</label>
+                            <input type="number" id="i_n" value="200" step="50" min="50"/>
+                        </div>
+                        <div style="flex:0.6">
+                            <label>Tolerancia (ε)</label>
+                            <input type="number" id="i_eps" value="1e-6" step="1e-6"/>
+                        </div>
+                        <div class="row" style="gap:8px">
+                            <button class="primary" id="i_calc">Calcular</button>
+                            <button id="i_png">PNG</button>
+                            <button id="i_pdf">Informe PDF</button>
+                        </div>
+                    </div>
+                    <div class="kpi">
+                        <div class="item"><div class="muted">Indefinida (CAS)</div><div class="val mono" id="i_sym">—</div></div>
+                        <div class="item"><div class="muted">Definida (num.)</div><div class="val" id="i_def">—</div></div>
+                        <div class="item"><div class="muted">Error estimado</div><div class="val" id="i_err">—</div></div>
+                    </div>
+                </div>
+                <div>
+                    <canvas id="i_chart" height="320"></canvas>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        // Utilidades básicas
+        const fmt = (x, u = "") => (Number.isFinite(x) ? (Math.abs(x) >= 1e4 || Math.abs(x) < 1e-3 ? x.toExponential(4) : x.toFixed(4)) : "—") + (u ? " " + u : "");
+        const byId = id => document.getElementById(id);
+        function getVarColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        // Tabs
+        document.querySelectorAll('.tab').forEach(t => {
+            t.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+                document.querySelectorAll('main section').forEach(s => s.classList.add('hidden'));
+                t.classList.add('active');
+                byId(t.dataset.target).classList.remove('hidden');
+            });
+        });
+
+        // Variables globales para caída libre
+        let fallAnimation = null;
+        let fallData = [];
+        let liveChart = null;
+        let velocityChart = null;
+        let fallState = 'ready';
+        let fallTrailPoints = [];
+
+        // Variables globales para movimiento parabólico
+        let projAnimation = null;
+        let projState = 'ready';
+
+        // Inicializar visualización de caída libre
+        function initializeFallVisualization() {
+            const building = byId('building');
+            const windows = byId('windows');
+            const y0 = parseFloat(byId('c_y0').value);
+
+            const maxBuildingHeightPx = 350;
+            building.style.height = `${Math.min(maxBuildingHeightPx, y0 * 2)}px`;
+
+            windows.innerHTML = '';
+
+            const floors = Math.max(1, Math.floor(y0 / 15));
+            for (let floor = 0; floor < floors; floor++) {
+                for (let win = 0; win < 3; win++) {
+                    const windowEl = document.createElement('div');
+                    windowEl.className = 'window';
+                    windowEl.style.left = `${15 + win * 25}px`;
+                    windowEl.style.bottom = `${20 + floor * 30}px`;
+                    windows.appendChild(windowEl);
+                }
+            }
+
+            resetFallingObject();
+
+            updateDisplayValues();
+        }
+
+        function updateDisplayValues() {
+            byId('c_y0_val').textContent = byId('c_y0').value + ' m';
+            const v0 = parseFloat(byId('c_v0').value);
+            const unit = byId('c_v0_unit').value;
+            let v0_ms = unit === 'kmh' ? v0 / 3.6 : v0;
+            let v0_kmh = unit === 'ms' ? v0 * 3.6 : v0;
+            byId('c_v0_val').textContent = `${v0_ms.toFixed(2)} m/s (${v0_kmh.toFixed(2)} km/h)`;
+            byId('c_g_val').textContent = byId('c_g').value + ' m/s²';
+            byId('c_speed_val').textContent = byId('c_speed').value + 'x';
+        }
+
+        function resetFallingObject() {
+            const obj = byId('fallingObject');
+            const building = byId('building');
+            const viz = byId('fallViz');
+            const buildingWidth = 120; // igual que en CSS
+            const offsetX = 80; // separación horizontal
+
+            // Mueve el objeto a la izquierda del edificio
+            obj.style.left = `calc(50% - ${buildingWidth / 2 + offsetX}px)`;
+            obj.style.transform = 'translateX(-50%)';
+            obj.style.bottom = building.style.height;
+            obj.style.display = 'block';
+
+            // Elimina líneas guía anteriores
+            viz.querySelectorAll('.fall-guide').forEach(line => line.remove());
+
+            // Línea guía negra (a la izquierda)
+            const buildingLeft = `calc(50% - ${buildingWidth / 2}px)`;
+            const objectX = `calc(50% - ${buildingWidth / 2 + offsetX}px)`;
+            const hLine = document.createElement('div');
+            hLine.className = 'fall-guide';
+            hLine.style.position = 'absolute';
+            hLine.style.left = objectX;
+            hLine.style.width = `${offsetX}px`;
+            hLine.style.height = '4px';
+            hLine.style.bottom = building.style.height;
+            hLine.style.background = '#222'; // negro
+            hLine.style.borderRadius = '2px';
+            viz.appendChild(hLine);
+
+            document.querySelectorAll('.trail').forEach(trail => trail.remove());
+
+            fallState = 'ready';
+            byId('status').textContent = 'Listo';
+            byId('c_start').querySelector('.status-indicator').className = 'status-indicator status-ready';
+        }
+
+        function simulateFreeFall() {
+            const y0 = parseFloat(byId('c_y0').value);
+            const v0 = getVelocityInput();
+            const g = parseFloat(byId('c_g').value);
+            const speed = parseFloat(byId('c_speed').value);
+
+            const dt = 0.016 / speed;
+            let t = 0;
+            let y = y0;
+            let v = v0;
+
+            fallData = [];
+            fallState = 'falling';
+            byId('status').textContent = 'Cayendo';
+            byId('c_start').querySelector('.status-indicator').className = 'status-indicator status-falling';
+
+            const obj = byId('fallingObject');
+            const viz = byId('fallViz');
+            const vizHeight = viz.offsetHeight;
+            const buildingHeight = parseFloat(byId('building').style.height);
+            const scaleY = parseFloat(building.style.height) / y0;
+
+            function animate() {
+                y = y0 + v0 * t - 0.5 * g * t * t;
+                v = v0 - g * t;
+
+                fallData.push({ time: t, height: y, velocity: v, energy: 0.5 * v * v });
+
+                byId('timeDisplay').textContent = t.toFixed(2) + ' s';
+                byId('heightDisplay').textContent = Math.max(0, y).toFixed(1) + ' m';
+                byId('velocityDisplay').textContent = Math.abs(v).toFixed(1) + ' m/s';
+
+                obj.style.bottom = Math.max(0, y * scaleY) + 'px';
+
+                // --- RASTRO ROJO DEBAJO DEL OBJETO ---
+                const trail = document.createElement('div');
+                trail.className = 'trail';
+                trail.style.left = obj.style.left;
+                trail.style.transform = obj.style.transform;
+                trail.style.bottom = '0px';
+                trail.style.height = Math.max(0, y * scaleY) + 'px';
+                trail.style.background = 'linear-gradient(to top, rgba(255,68,68,0.8), transparent)';
+                viz.appendChild(trail);
+                setTimeout(() => trail.remove(), 1000);
+                // -------------------------------------
+
+                fallTrailPoints.push(Math.max(0, y * scaleY));
+
+                // Elimina rastros anteriores
+                viz.querySelectorAll('.trail-permanent').forEach(trail => trail.remove());
+
+                // Dibuja el rastro permanente
+                if (fallTrailPoints.length > 1) {
+                    for (let i = 1; i < fallTrailPoints.length; i++) {
+                        const trail = document.createElement('div');
+                        trail.className = 'trail trail-permanent';
+                        trail.style.left = obj.style.left;
+                        trail.style.transform = obj.style.transform;
+                        trail.style.bottom = fallTrailPoints[i - 1] + 'px';
+                        trail.style.height = (fallTrailPoints[i] - fallTrailPoints[i - 1]) + 'px';
+                        trail.style.background = 'rgba(255,68,68,0.8)';
+                        viz.appendChild(trail);
+                    }
+                }
+
+                // --- ELIMINA ESTA LÍNEA ---
+                // updateLiveCharts();
+
+                if (y > 0) {
+                    t += dt;
+                    fallAnimation = requestAnimationFrame(animate);
+                } else {
+                    finishFall();
+                }
+            }
+
+            fallAnimation = requestAnimationFrame(animate);
+        }
+
+        function updateLiveChartsFinal() {
+            if (!liveChart || !velocityChart) return;
+
+            const times = fallData.map(d => d.time.toFixed(2));
+            const heights = fallData.map(d => d.height);
+            const velocities = fallData.map(d => Math.abs(d.velocity));
+
+            liveChart.data.labels = times;
+            liveChart.data.datasets[0].data = heights;
+            liveChart.update();
+
+            velocityChart.data.labels = times;
+            velocityChart.data.datasets[0].data = velocities;
+            velocityChart.update();
+        }
+
+        function finishFall() {
+            fallState = 'finished';
+            byId('status').textContent = 'Impacto';
+            byId('c_start').querySelector('.status-indicator').className = 'status-indicator status-impact';
+
+            const impact = document.createElement('div');
+            impact.className = 'impact-effect';
+            byId('fallViz').appendChild(impact);
+            setTimeout(() => impact.remove(), 500);
+
+            const finalData = fallData[fallData.length - 1];
+            const unit = byId('c_v0_unit').value;
+            let vFinal = finalData.velocity;
+            if (unit === 'kmh') vFinal = vFinal * 3.6;
+            byId('c_ti').textContent = fmt(finalData.time, 's');
+            byId('c_vi').textContent = fmt(Math.abs(vFinal), unit === 'kmh' ? 'km/h' : 'm/s');
+            byId('c_ke').textContent = fmt(finalData.energy, 'J');
+
+            // Coloca el objeto en el suelo y lo mantiene visible
+            const obj = byId('fallingObject');
+            obj.style.bottom = '0px';
+            obj.style.display = 'block';
+
+            // --- ACTUALIZA LA GRÁFICA FINAL ---
+            updateLiveChartsFinal();
+        }
+
+        function initializeLiveCharts() {
+            const ctx1 = byId('c_chart_live').getContext('2d');
+            const ctx2 = byId('c_chart_velocity').getContext('2d');
+
+            liveChart = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Altura [m]',
+                        data: [],
+                        borderColor: getVarColor('--accent'),
+                        backgroundColor: 'rgba(77, 159, 255, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Tiempo [s]' },
+                            grid: { color: '#bbb' },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    // Solo enteros
+                                    const v = Number(this.getLabelForValue(value));
+                                    return Number.isInteger(v) ? v : '';
+                                },
+                                stepSize: 1,
+                                color: '#222'
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: 'Altura [m]' },
+                            grid: { color: '#bbb' },
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : '';
+                                },
+                                stepSize: 1,
+                                color: '#222'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            velocityChart = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Velocidad [m/s]',
+                        data: [],
+                        borderColor: getVarColor('--ok'),
+                        backgroundColor: 'rgba(52, 211, 153, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: false,
+                    plugins: {
+                        legend: { display: true }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Tiempo [s]' },
+                            grid: { color: '#bbb' },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    const v = Number(this.getLabelForValue(value));
+                                    return Number.isInteger(v) ? v : '';
+                                },
+                                stepSize: 1,
+                                color: '#222'
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: 'Velocidad [m/s]' },
+                            grid: { color: '#bbb' },
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : '';
+                                },
+                                stepSize: 1,
+                                color: '#222'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Event listeners para caída libre
+        byId('c_start').addEventListener('click', () => {
+            if (fallState === 'ready') {
+                simulateFreeFall();
+            }
+        });
+
+        byId('c_reset').addEventListener('click', () => {
+            if (fallAnimation) {
+                cancelAnimationFrame(fallAnimation);
+            }
+            fallData = [];
+            resetFallingObject();
+            if (liveChart) {
+                liveChart.data.labels = [];
+                liveChart.data.datasets[0].data = [];
+                liveChart.update();
+            }
+            if (velocityChart) {
+                velocityChart.data.labels = [];
+                velocityChart.data.datasets[0].data = [];
+                velocityChart.update();
+            }
+            byId('c_ti').textContent = '—';
+            byId('c_vi').textContent = '—';
+            byId('c_ke').textContent = '—';
+            // Asegura que el objeto rojo esté visible y en la posición inicial
+            byId('fallingObject').style.display = 'block';
+            byId('fallingObject').style.bottom = byId('building').style.height;
+        });
+
+        ['c_y0', 'c_v0', 'c_g', 'c_speed'].forEach(id => {
+            byId(id).addEventListener('input', () => {
+                updateDisplayValues();
+                if (id === 'c_y0') {
+                    initializeFallVisualization();
+                }
+            });
+        });
+        byId('c_v0_unit').addEventListener('change', updateDisplayValues);
+        byId('c_v0').addEventListener('input', updateDisplayValues);
+
+        byId('c_pdf').addEventListener('click', async () => {
+            if (typeof window.jspdf === 'undefined') {
+                alert('No se pudo cargar la librería jsPDF.');
+                return;
+            }
+
+            if (!fallData.length) {
+                alert('Primero realiza una simulación para generar el informe.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título centrado
+            doc.setFontSize(20);
+            doc.text('Informe de Caída Libre', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.text(`Altura del edificio: ${parseFloat(byId('c_y0').value).toFixed(2)} m`, 20, 40);
+            const unit = byId('c_v0_unit').value;
+            const v0 = parseFloat(byId('c_v0').value);
+            let v0Display = unit === 'kmh' ? `${v0.toFixed(2)} km/h` : `${v0.toFixed(2)} m/s`;
+            doc.text(`Velocidad inicial: ${v0Display}`, 20, 48);
+            doc.text(`Gravedad: ${parseFloat(byId('c_g').value).toFixed(2)} m/s²`, 20, 56);
+
+            const finalData = fallData[fallData.length - 1];
+            let vFinal = finalData.velocity;
+            if (unit === 'kmh') vFinal = vFinal * 3.6;
+            let vFinalDisplay = unit === 'kmh' ? `${Math.abs(vFinal).toFixed(2)} km/h` : `${Math.abs(vFinal).toFixed(2)} m/s`;
+
+            doc.setFontSize(13);
+            doc.text('Resultados:', 20, 70);
+            doc.setFontSize(12);
+            doc.text(`• Tiempo de impacto: ${finalData.time.toFixed(2)} s`, 25, 80);
+            doc.text(`• Velocidad de impacto: ${vFinalDisplay}`, 25, 88);
+            doc.text(`• Energía de impacto: ${finalData.energy.toFixed(2)} J`, 25, 96);
+
+            doc.setFontSize(13);
+            doc.text('Ecuaciones utilizadas:', 20, 110);
+            doc.setFontSize(12);
+            doc.text('y(t) = y₀ + v₀t - ½gt²', 25, 120);
+            doc.text('v(t) = v₀ - gt', 25, 128);
+
+            doc.setFontSize(13);
+            doc.text('Conclusión:', 20, 142);
+            doc.setFontSize(12);
+            doc.text(
+                'La simulación muestra que el tiempo de caída depende de la altura y la velocidad inicial. ' +
+                'La velocidad de impacto aumenta con la altura y la aceleración gravitacional. ' +
+                'Estos resultados son consistentes con la física clásica de caída libre.',
+                25, 152, { maxWidth: 160 }
+            );
+
+            doc.save('informe_caida_libre.pdf');
+        });
+
+        byId('c_png').addEventListener('click', async () => {
+            // Coloca el objeto en el suelo y actualiza la información antes de capturar
+            const obj = byId('fallingObject');
+            obj.style.bottom = '0px';
+            obj.style.display = 'block';
+
+            // Actualiza el panel de información con los datos finales
+            if (fallData.length > 0) {
+                const finalData = fallData[fallData.length - 1];
+                const unit = byId('c_v0_unit').value;
+                let vFinal = finalData.velocity;
+                if (unit === 'kmh') vFinal = vFinal * 3.6;
+                byId('status').textContent = 'Impacto';
+                byId('timeDisplay').textContent = finalData.time.toFixed(2) + ' s';
+                byId('heightDisplay').textContent = '0.0 m';
+                byId('velocityDisplay').textContent = Math.abs(vFinal).toFixed(1) + (unit === 'kmh' ? ' km/h' : ' m/s');
+            }
+
+            const viz = byId('fallViz');
+            if (!viz) return;
+            if (typeof html2canvas === 'undefined') {
+                alert('No se pudo cargar la librería html2canvas.');
+                return;
+            }
+            try {
+                const canvas = await html2canvas(viz, { backgroundColor: null });
+                const link = document.createElement('a');
+                link.download = 'caida_libre.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } catch (e) {
+                alert('Error al generar la imagen PNG.');
+            }
+        });
+
+        // Movimiento parabólico
+        const charts = [];
+        let pChart;
+
+        function simulateParabolic({ v0, thetaDeg, y0, g, dt, drag, k }) {
+            const theta = thetaDeg * Math.PI / 180;
+            let vx = v0 * Math.cos(theta);
+            let vy = v0 * Math.sin(theta);
+            let x = 0, y = y0, t = 0;
+            const data = [];
+            const m = 1;
+            while (y >= 0) {
+                data.push({ t, x, y, vx, vy });
+                const ax = drag ? -(k / m) * vx : 0;
+                const ay = -g + (drag ? -(k / m) * vy : 0);
+                vx += ax * dt;
+                vy += ay * dt;
+                x += vx * dt;
+                y += vy * dt;
+                t += dt;
+                if (t > 1e4) break;
+            }
+            return data;
+        }
+
+        function parabolicClosedForm(v0, thDeg, y0, g) {
+            const th = thDeg * Math.PI / 180;
+            const vx = v0 * Math.cos(th), vy = v0 * Math.sin(th);
+            const disc = vy * vy + 2 * g * y0;
+            const tf = (vy + Math.sqrt(disc)) / g;
+            const range = vx * tf;
+            const hmax = y0 + vy * vy / (2 * g);
+            return { tf, range, hmax };
+        }
+
+        function p_calcular() {
+            const v0 = parseFloat(byId('p_v0').value);
+            const theta = parseFloat(byId('p_theta').value);
+            const y0 = parseFloat(byId('p_y0').value);
+            const g = parseFloat(byId('p_g').value);
+            const dt = Math.max(0.005, parseFloat(byId('p_dt').value));
+            const drag = byId('p_drag').checked;
+            const k = Math.max(0, parseFloat(byId('p_k').value));
+
+            const sim = simulateParabolic({ v0, thetaDeg: theta, y0, g, dt, drag, k });
+            const xs = sim.map(r => r.x);
+            const ys = sim.map(r => r.y);
+
+            let tf, range, hmax;
+            if (!drag) {
+                const cf = parabolicClosedForm(v0, theta, y0, g);
+                tf = cf.tf; range = cf.range; hmax = cf.hmax;
+            } else {
+                tf = sim[sim.length - 1]?.t ?? NaN;
+                range = sim[sim.length - 1]?.x ?? NaN;
+                hmax = Math.max(...ys);
+            }
+
+            byId('p_tflight').textContent = fmt(tf, "s");
+            byId('p_range').textContent = fmt(range, "m");
+            byId('p_hmax').textContent = fmt(hmax, "m");
+
+            const ctx = byId('p_chart').getContext('2d');
+            pChart?.destroy();
+            pChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: xs,
+                    datasets: [{
+                        label: 'Trayectoria (y vs x)',
+                        data: ys,
+                        fill: false,
+                        tension: 0.0,
+                        borderColor: getVarColor('--accent')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        x: {
+                            title: { display: true, text: "x [m]" },
+                            grid: { color: '#bbb' },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    const v = Number(this.getLabelForValue(value));
+                                    return Number.isInteger(v) ? v : '';
+                                },
+                                stepSize: 1,
+                                color: '#222'
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: "y [m]" },
+                            grid: { color: '#bbb' },
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : '';
+                                },
+                                stepSize: 1,
+                                color: '#222'
+                            },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            charts[0] = pChart;
+            window._p_data = sim;
+            initializeProjVisualization();
+        }
+
+        function initializeProjVisualization() {
+            const theta = parseFloat(byId('p_theta').value);
+            const y0 = parseFloat(byId('p_y0').value);
+            const cannon = byId('cannon');
+            const viz = byId('projViz');
+            const vizHeight = viz.offsetHeight;
+            const maxY = Math.max(y0, 1); // evita división por cero
+
+            // Calcula la posición vertical del cañón según la altura inicial
+            // El cañón sube proporcionalmente en el área visual
+            const cannonBottom = Math.round((y0 / maxY) * (vizHeight * 0.8));
+            cannon.style.bottom = `${cannonBottom}px`;
+
+            const isVertical = theta >= 89 && theta <= 91 && y0 > 0;
+
+            cannon.style.transform = `rotate(${theta}deg)`;
+
+            if (isVertical && y0 > 0) {
+                viz.style.background = 'linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #98FB98 100%)';
+                cannon.style.display = 'none';
+
+                let building = viz.querySelector('.building');
+                if (!building) {
+                    building = document.createElement('div');
+                    building.className = 'building';
+                    building.id = 'buildingProj';
+                    const windows = document.createElement('div');
+                    windows.className = 'building-windows';
+                    building.appendChild(windows);
+                    viz.appendChild(building);
+                }
+
+                building.style.height = `${(y0 / maxY * vizHeight * 0.9)}px`;
+
+                const windowsEl = building.querySelector('.building-windows');
+                windowsEl.innerHTML = '';
+                const floors = Math.floor(y0 / 15);
+                for (let floor = 0; floor < floors; floor++) {
+                    for (let win = 0; win < 3; win++) {
+                        const windowEl = document.createElement('div');
+                        windowEl.className = 'window';
+                        windowEl.style.left = `${15 + win * 25}px`;
+                        windowEl.style.bottom = `${20 + floor * 30}px`;
+                        windowsEl.appendChild(windowEl);
+                    }
+                }
+            } else {
+                viz.style.background = 'linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #228B22 100%)';
+                cannon.style.display = 'block';
+                const building = viz.querySelector('.building');
+                if (building) building.remove();
+            }
+
+            resetProjectile();
+        }
+
+        function resetProjectile() {
+            const obj = byId('projectile');
+            const theta = parseFloat(byId('p_theta').value);
+            const y0 = parseFloat(byId('p_y0').value);
+            const viz = byId('projViz');
+            const vizHeight = viz.offsetHeight;
+            const maxY = Math.max(y0, 1);
+
+            const isVertical = theta >= 89 && theta <= 91;
+
+            if (isVertical) {
+                obj.style.left = '50%';
+                obj.style.transform = 'translateX(-50%)';
+                obj.style.bottom = y0 > 0
+                    ? (viz.querySelector('.building')
+                        ? viz.querySelector('.building').style.height
+                        : '0px')
+                    : '0px';
+            } else {
+                // Boca del cañón: misma altura que el cañón
+                const cannonBottom = Math.round((y0 / maxY) * (vizHeight * 0.8));
+                obj.style.left = '80px';
+                obj.style.bottom = `${cannonBottom + 10}px`;
+                obj.style.transform = '';
+            }
+            obj.style.display = 'block';
+
+            document.querySelectorAll('.trail').forEach(trail => trail.remove());
+
+            projState = 'ready';
+            byId('statusProj').textContent = 'Listo';
+        }
+
+        function simulateProjectile() {
+            p_calcular();
+            const sim = window._p_data;
+            if (!sim || sim.length < 2) {
+                console.error('No hay datos válidos para la simulación del proyectil');
+                return;
+            }
+
+            const viz = byId('projViz');
+            const vizWidth = viz.offsetWidth;
+            const vizHeight = viz.offsetHeight;
+            const maxX = Math.max(...sim.map(d => d.x)) || 1;
+            const maxY = Math.max(...sim.map(d => d.y)) || 1;
+            const scaleX = (vizWidth - 80) / maxX;
+            const scaleY = (vizHeight - 40) / maxY;
+            const speed = 1; // fija por ahora
+            const dtSim = sim[1].t - sim[0].t;
+            if (dtSim <= 0) {
+                console.error('dtSim inválido');
+                return;
+            }
+            const totalTime = sim[sim.length - 1].t;
+            let t = 0;
+            const dt = 0.016 / speed;
+
+            projState = 'flying';
+            byId('statusProj').textContent = 'En vuelo';
+
+            const obj = byId('projectile');
+            const theta = parseFloat(byId('p_theta').value);
+            const isVertical = theta >= 89 && theta <= 91;
+            const leftOffset = isVertical ? vizWidth / 2 - 10 : 40;
+
+            // Limpia rastros anteriores
+            viz.querySelectorAll('.trail').forEach(trail => trail.remove());
+
+            function animate() {
+                if (t > totalTime) {
+                    finishProj();
+                    return;
+                }
+
+                let index = 0;
+                while (index < sim.length - 1 && sim[index + 1].t < t) index++;
+                if (index >= sim.length - 1) {
+                    finishProj();
+                    return;
+                }
+
+                const frac = (t - sim[index].t) / dtSim;
+                const x = sim[index].x + frac * (sim[index + 1].x - sim[index].x);
+                const y = sim[index].y + frac * (sim[index + 1].y - sim[index].y);
+                const vx = sim[index].vx + frac * (sim[index + 1].vx - sim[index].vx);
+                const vy = sim[index].vy + frac * (sim[index + 1].vy - sim[index].vy);
+
+                obj.style.left = (isVertical ? leftOffset : x * scaleX + 40) + 'px';
+                obj.style.bottom = (y * scaleY) + 'px';
+
+                byId('timeProj').textContent = t.toFixed(2) + ' s';
+                byId('xDisplay').textContent = x.toFixed(1) + ' m';
+                byId('yDisplay').textContent = y.toFixed(1) + ' m';
+                byId('vDisplay').textContent = Math.sqrt(vx ** 2 + vy ** 2).toFixed(1) + ' m/s';
+
+                // --- AGREGAR RASTRO ---
+                const trail = document.createElement('div');
+                trail.className = 'trail';
+                trail.style.left = obj.style.left;
+                trail.style.bottom = obj.style.bottom;
+                trail.style.height = '20px';
+                viz.appendChild(trail);
+                setTimeout(() => trail.remove(), 1000);
+                // ----------------------
+
+                t += dt;
+                projAnimation = requestAnimationFrame(animate);
+            }
+
+            projAnimation = requestAnimationFrame(animate);
+        }
+
+        function finishProj() {
+            projState = 'finished';
+            byId('statusProj').textContent = 'Impacto';
+
+            const impact = document.createElement('div');
+            impact.className = 'impact-effect';
+            impact.style.left = byId('projectile').style.left;
+            byId('projViz').appendChild(impact);
+            setTimeout(() => impact.remove(), 500);
+
+            setTimeout(() => {
+                byId('projectile').style.display = 'none';
+            }, 200);
+        }
+
+        // Event listeners para parabólico
+        byId('p_run').addEventListener('click', p_calcular);
+        byId('p_anim').addEventListener('click', () => {
+            if (projState === 'ready') simulateProjectile();
+        });
+        byId('p_reset').addEventListener('click', () => {
+            if (projAnimation) cancelAnimationFrame(projAnimation);
+            resetProjectile();
+        });
+
+        ['p_v0', 'p_theta', 'p_y0', 'p_g', 'p_dt', 'p_drag', 'p_k'].forEach(id => {
+            byId(id).addEventListener(id === 'p_drag' ? 'change' : 'input', p_calcular);
+        });
+
+        // Integrales
+        let iChart;
+
+        function trySymbolicIntegral(expr) {
+            try {
+                const res = nerdamer.integrate(expr, 'x').toString();
+                return res;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function simpson(f, a, b, nMin = 200, eps = 1e-6) {
+            let n = Math.max(10, nMin);
+            if (n % 2) n++;
+            let prev = Infinity, val = 0;
+            for (let iter = 0; iter < 12; iter++) {
+                const h = (b - a) / n;
+                let s1 = 0, s2 = 0;
+                for (let k = 1; k < n; k += 2) s1 += f(a + k * h);
+                for (let k = 2; k < n; k += 2) s2 += f(a + k * h);
+                val = (h / 3) * (f(a) + 4 * s1 + 2 * s2 + f(b));
+                if (Math.abs(val - prev) < eps) break;
+                prev = val;
+                n *= 2;
+                if (n > 1 << 20) break;
+            }
+            return { value: val, n };
+        }
+
+        function i_calcular() {
+            const fxStr = byId('i_fx').value;
+            const a = parseFloat(byId('i_a').value);
+            const b = parseFloat(byId('i_b').value);
+            const n = parseInt(byId('i_n').value);
+            const eps = parseFloat(byId('i_eps').value);
+
+            let f;
+            try {
+                const node = math.parse(fxStr);
+                const code = node.compile();
+                f = (x) => {
+                    const r = code.evaluate({ x });
+                    const v = Number(r);
+                    if (!Number.isFinite(v)) throw new Error("Valor no finito");
+                    return v;
+                };
+            } catch (e) {
+                byId('i_def').textContent = "Error en f(x)";
+                return;
+            }
+
+            const sym = trySymbolicIntegral(fxStr);
+            byId('i_sym').textContent = sym ? sym : "(no cerrada)";
+
+            try {
+                const { value } = simpson(f, a, b, n, eps);
+                byId('i_def').textContent = fmt(value);
+
+                const coarse = simpson(f, a, b, Math.max(10, Math.floor(n / 2)), eps).value;
+                const err = Math.abs(value - coarse);
+                byId('i_err').textContent = fmt(err);
+            } catch (e) {
+                byId('i_def').textContent = "Error numérico";
+                byId('i_err').textContent = "—";
+            }
+
+            const m = Math.max(100, n);
+            const xs = [...Array(m)].map((_, i) => a + (b - a) * i / (m - 1));
+            const ys = xs.map(x => f(x));
+
+            iChart?.destroy();
+            iChart = new Chart(byId('i_chart').getContext('2d'), {
+                type: 'line',
+                data: { labels: xs, datasets: [{ label: 'f(x)', data: ys, fill: false, tension: 0, borderColor: getVarColor('--accent') }] },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        x: { title: { display: true, text: "x" }, ticks: { callback: (v, idx) => idx % Math.round(m / 10) === 0 ? xs[idx].toFixed(2) : "" } },
+                        y: { title: { display: true, text: "f(x)" } }
+                    }
+                }
+            });
+            charts[3] = iChart;
+        }
+
+        byId('i_calc').addEventListener('click', i_calcular);
+        ['i_fx', 'i_a', 'i_b', 'i_n', 'i_eps'].forEach(id => {
+            byId(id).addEventListener('input', i_calcular);
+        });
+
+        byId('i_pdf').addEventListener('click', async () => {
+    if (typeof window.jspdf === 'undefined') {
+        alert('No se pudo cargar la librería jsPDF.');
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Título centrado
+    doc.setFontSize(20);
+    doc.text('Informe de Integrales', 105, 20, { align: 'center' });
+
+    doc.setFontSize(12);
+    doc.text(`Función: f(x) = ${byId('i_fx').value}`, 20, 40);
+    doc.text(`Intervalo: [${parseFloat(byId('i_a').value).toFixed(2)}, ${parseFloat(byId('i_b').value).toFixed(2)}]`, 20, 48);
+    doc.text(`Muestras mínimas: ${parseInt(byId('i_n').value)}`, 20, 56);
+    doc.text(`Tolerancia: ${parseFloat(byId('i_eps').value).toExponential(2)}`, 20, 64);
+
+    doc.setFontSize(13);
+    doc.text('Resultados:', 20, 78);
+    doc.setFontSize(12);
+    doc.text(`• Indefinida (CAS): ${byId('i_sym').textContent}`, 25, 88);
+    doc.text(`• Definida (numérica): ${byId('i_def').textContent.replace('—', '')}`, 25, 96);
+    doc.text(`• Error estimado: ${byId('i_err').textContent.replace('—', '')}`, 25, 104);
+
+    doc.setFontSize(13);
+    doc.text('Método utilizado:', 20, 118);
+    doc.setFontSize(12);
+    doc.text('Simpson adaptativo para integración numérica.', 25, 128);
+
+    doc.setFontSize(13);
+    doc.text('Conclusión:', 20, 142);
+    doc.setFontSize(12);
+    doc.text(
+        'La integral definida se calcula numéricamente y la indefinida mediante álgebra computacional. ' +
+        'El error estimado permite evaluar la precisión del resultado.',
+        25, 152, { maxWidth: 160 }
+    );
+
+    doc.save('informe_integrales.pdf');
+});
+
+        // Inicialización
+        initializeFallVisualization();
+        initializeLiveCharts();
+        initializeProjVisualization();
+        p_calcular();
+        i_calcular();
+
+        function getVelocityInput() {
+            const v0 = parseFloat(byId('c_v0').value);
+            const unit = byId('c_v0_unit').value;
+            if (unit === 'kmh') {
+                return v0 / 3.6; // convierte km/h a m/s
+            }
+            return v0;
+        }
+
+        byId('p_pdf').addEventListener('click', async () => {
+            if (typeof window.jspdf === 'undefined') {
+                alert('No se pudo cargar la librería jsPDF.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Título centrado
+            doc.setFontSize(20);
+            doc.text('Informe de Movimiento Parabólico', 105, 20, { align: 'center' });
+
+            doc.setFontSize(12);
+            doc.text(`Velocidad inicial: ${parseFloat(byId('p_v0').value).toFixed(2)} m/s`, 20, 40);
+            doc.text(`Ángulo de lanzamiento: ${parseFloat(byId('p_theta').value).toFixed(2)}°`, 20, 48);
+            doc.text(`Altura inicial: ${parseFloat(byId('p_y0').value).toFixed(2)} m`, 20, 56);
+            doc.text(`Gravedad: ${parseFloat(byId('p_g').value).toFixed(2)} m/s²`, 20, 64);
+            doc.text(`Arrastre lineal: ${byId('p_drag').checked ? 'Sí' : 'No'}`, 20, 72);
+            if (byId('p_drag').checked) {
+                doc.text(`Coeficiente de arrastre k: ${parseFloat(byId('p_k').value).toFixed(2)} kg/s`, 20, 80);
+            }
+
+            doc.setFontSize(13);
+            doc.text('Resultados:', 20, 94);
+            doc.setFontSize(12);
+            doc.text(`• Alcance: ${byId('p_range').textContent.replace('—', '')}`, 25, 104);
+            doc.text(`• Tiempo de vuelo: ${byId('p_tflight').textContent.replace('—', '')}`, 25, 112);
+            doc.text(`• Altura máxima: ${byId('p_hmax').textContent.replace('—', '')}`, 25, 120);
+
+            doc.setFontSize(13);
+            doc.text('Ecuaciones utilizadas:', 20, 134);
+            doc.setFontSize(12);
+            doc.text('x(t) = v₀ cos(θ) t', 25, 144);
+            doc.text('y(t) = y₀ + v₀ sin(θ) t - ½gt²', 25, 152);
+
+            doc.setFontSize(13);
+            doc.text('Conclusión:', 20, 166);
+            doc.setFontSize(12);
+            doc.text(
+                'La simulación confirma que el alcance y la altura máxima dependen de la velocidad inicial, el ángulo y la gravedad. ' +
+                'El arrastre lineal reduce el alcance y la altura máxima. ' +
+                'Estos resultados coinciden con la teoría del movimiento parabólico en física.',
+                25, 176, { maxWidth: 160 }
+            );
+
+            doc.save('informe_movimiento_parabolico.pdf');
+        });
+
+        // Solo agrega este bloque para PNG de la gráfica de movimiento parabólico:
+        byId('p_png').addEventListener('click', async () => {
+            const chartCanvas = byId('p_chart');
+            if (!chartCanvas) return;
+            if (typeof html2canvas === 'undefined') {
+                alert('No se pudo cargar la librería html2canvas.');
+                return;
+            }
+            try {
+                const canvas = await html2canvas(chartCanvas, { backgroundColor: "#fff" });
+                const link = document.createElement('a');
+                link.download = 'grafica_movimiento_parabolico.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            } catch (e) {
+                alert('Error al generar la imagen PNG.');
+            }
+        });
+    </script>
+</body>
+</html>
